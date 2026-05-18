@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Foto Lampiran A4 v4 — by Rajib</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface2: #f0f1f4;
+  --border: #e2e4e9;
+  --border2: #d0d3db;
+  --accent: #2563eb;
+  --accent-light: #eff3ff;
+  --accent2: #1d4ed8;
+  --text: #1a1d23;
+  --text2: #4b5563;
+  --muted: #9ca3af;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --green: #16a34a;
+  --orange: #ea580c;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+}
+
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+.app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+.app-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.app-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.app-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.app-version { margin-left: auto; background: var(--accent-light); border: 1px solid #bfdbfe; border-radius: 20px; padding: 3px 10px; font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: .06em; }
+
+/* LAYOUT */
+.main { display: flex; min-height: calc(100vh - 65px); }
+.sidebar { width: 290px; min-width: 290px; background: var(--surface); border-right: 1px solid var(--border); padding: 18px 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.content { flex: 1; background: var(--bg); padding: 24px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+/* SECTION */
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+.field { margin-bottom: 8px; }
+.field label { display: block; font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 600; }
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px; padding: 8px 11px; outline: none; transition: border-color .18s, box-shadow .18s;
+}
+.field input:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.field select option { background: #fff; }
+
+/* DATE TOGGLE */
+.date-toggle { display: flex; gap: 5px; margin-bottom: 7px; }
+.date-toggle-btn { flex:1; padding: 6px 4px; border-radius: 6px; border: 1px solid var(--border2); background: var(--surface2); color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; transition: all .18s; text-align: center; }
+.date-toggle-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+/* TINTA */
+.tinta-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+.tinta-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.tinta-label { font-size: 11px; color: var(--text2); }
+.tinta-val { font-size: 11px; font-weight: 700; color: var(--accent); }
+.tinta-bar-bg { background: var(--border); border-radius: 99px; height: 6px; width: 100%; overflow: hidden; }
+.tinta-bar { height: 100%; border-radius: 99px; transition: width .4s, background .4s; }
+.tinta-info { font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+/* UPLOAD ZONE */
+.upload-zone { border: 2px dashed var(--border2); border-radius: var(--radius); padding: 16px 12px; text-align: center; cursor: pointer; transition: all .2s; background: var(--surface2); }
+.upload-zone:hover, .upload-zone.drag-over { border-color: var(--accent); background: var(--accent-light); }
+.upload-zone p { font-size: 11px; color: var(--text2); line-height: 1.6; }
+.upload-zone strong { color: var(--accent); }
+
+/* THUMBS */
+.thumb-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; margin-top: 8px; }
+.thumb { position: relative; aspect-ratio: 1; border-radius: 7px; overflow: hidden; border: 2px solid var(--border2); cursor: grab; transition: transform .15s, box-shadow .15s; }
+.thumb:hover { transform: scale(1.05); box-shadow: var(--shadow-md); }
+.thumb.dragging { opacity: .4; transform: scale(.93); }
+.thumb.drag-target { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.thumb-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; background: rgba(0,0,0,.65); border: none; border-radius: 50%; color: #fff; font-size: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s; }
+.thumb:hover .thumb-del { opacity: 1; }
+.thumb-num { position: absolute; bottom: 2px; left: 3px; font-size: 8px; color: #fff; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+.thumb-orient { position: absolute; top: 2px; left: 3px; font-size: 8px; background: rgba(0,0,0,.55); color: rgba(255,255,255,.9); border-radius: 3px; padding: 1px 3px; font-weight: 700; }
+.photo-count { font-size: 10px; color: var(--muted); margin-top: 5px; text-align: center; }
+
+/* BUTTONS */
+.btn { width: 100%; padding: 10px; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .18s; }
+.btn-blue { background: var(--accent); color: #fff; }
+.btn-blue:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,.3); }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border2); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.btn-danger { background: transparent; color: #dc2626; border: 1px solid #fca5a5; }
+.btn-danger:hover { background: #fef2f2; }
+.btn-row { display: flex; flex-direction: column; gap: 7px; }
+
+.divider { height: 1px; background: var(--border); }
+.tag-info { font-size: 10px; color: var(--text2); background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; line-height: 1.7; }
+.fix-list { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm); padding: 9px 11px; }
+.fix-list div { font-size: 10px; color: #15803d; line-height: 1.9; }
+
+/* BADGE */
+.page-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); border: 1px solid #bfdbfe; border-radius: 20px; padding: 4px 10px; font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+
+
+/* PROGRESS / LOADING */
+.progress-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,.85); backdrop-filter: blur(4px); z-index: 500; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+.progress-overlay.show { display: flex; }
+.progress-spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.progress-text { font-size: 13px; color: var(--text2); font-weight: 600; }
+
+/* EMPTY */
+.empty-preview { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 50px 24px; background: var(--surface); border: 1.5px dashed var(--border2); border-radius: var(--radius); width: 100%; max-width: 500px; }
+.empty-preview .icon { font-size: 40px; opacity: .25; }
+.empty-preview p { font-size: 13px; color: var(--muted); }
+.empty-preview strong { color: var(--accent); }
+
+/* PREVIEW LABEL */
+.preview-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; text-align: center; width: 100%; }
+
+/* PAGE SEPARATOR */
+.page-sep { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 794px; }
+.page-sep-line { flex: 1; height: 1px; background: var(--border2); }
+.page-sep-label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .08em; white-space: nowrap; }
+
+/* A4 SHADOW */
+.a4-shadow-wrap { box-shadow: 0 4px 32px rgba(0,0,0,.15); border-radius: 4px; overflow: hidden; width: 794px; flex-shrink: 0; }
+
+/* Mobile wrap — ukuran diset via JS */
+.a4-mobile-wrap { position: relative; }
+
+/* ===== A4 PAGE ===== */
+.a4-page { width: 794px; background: #fafaf8; color: #1a1a1a; font-family: 'Plus Jakarta Sans', sans-serif; display: flex; flex-direction: column; page-break-after: always; }
+.a4-top-bar { height: 5px; background: linear-gradient(90deg,#1d4ed8,#2563eb,#3b82f6,#1d4ed8); flex-shrink: 0; }
+.a4-top-bar.hemat { background: #e5e7eb; }
+.a4-header { padding: 14px 24px 11px; border-bottom: 2px solid #1a1a1a; display: flex; align-items: center; gap: 14px; background: #fff; flex-shrink: 0; }
+.a4-header.hemat { border-bottom-color: #bbb; }
+.a4-logo-box { width: 38px; height: 38px; background: #1a1a1a; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.a4-logo-box.hemat { background: #666; }
+.a4-judul { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #1a1a1a; text-transform: uppercase; letter-spacing: .04em; line-height: 1.2; }
+.a4-sekolah { font-size: 9.5px; font-weight: 700; color: #6b6455; margin-top: 2px; letter-spacing: .1em; text-transform: uppercase; }
+.a4-badge { background: #1a1a1a; color: #fff; font-size: 7.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+.a4-badge.hemat { background: #555; }
+.a4-body { flex: 1; padding: 10px 18px 6px; background: #fafaf8; }
+.a4-body.hemat { background: #fff; }
+.a4-grid { display: grid; gap: 7px; width: 100%; }
+
+/* FOTO CELL */
+.foto-cell { position: relative; overflow: hidden; border-radius: 4px; border: 2px solid #1a1a1a; background: #111; display: flex; align-items: center; justify-content: center; }
+.foto-cell.hemat { border: 1.5px solid #ccc; background: #f5f5f5; }
+.foto-cell .blur-bg { position: absolute; inset: -8%; width: 116%; height: 116%; background-size: cover; background-position: center; filter: blur(16px) brightness(.45) saturate(1.3); z-index: 0; opacity: 0; }
+.foto-cell.needs-blur .blur-bg { opacity: 1; }
+.foto-cell.hemat .blur-bg { filter: blur(14px) brightness(.85) saturate(.5) grayscale(.4); }
+.foto-cell img { position: relative; z-index: 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
+.foto-cell.cover-mode img { width: 100%; height: 100%; object-fit: cover; }
+.foto-num { position: absolute; bottom: 4px; right: 5px; z-index: 2; font-size: 8.5px; font-weight: 800; color: rgba(255,255,255,.95); background: rgba(0,0,0,.55); padding: 2px 5px; border-radius: 3px; letter-spacing: .05em; }
+.foto-num.hemat { color: #555; background: rgba(255,255,255,.82); }
+
+/* FOOTER A4 — diperbaiki agar tidak terpotong */
+.a4-footer {
+  padding: 7px 24px;
+  border-top: 1px solid #d4cfc7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 34px;
+}
+.a4-footer.hemat { border-top-color: #ddd; }
+.a4-footer-text { font-size: 10px; color: #999; font-weight: 600; letter-spacing: .04em; white-space: nowrap; flex-shrink: 0; }
+.a4-footer-center { font-size: 10px; color: #bbb; text-align: center; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.a4-footer-lokasi { font-size: 9.5px; color: #aaa; font-weight: 500; text-align: center; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.a4-footer-pagenum { font-size: 10px; color: #bbb; font-weight: 600; white-space: nowrap; flex-shrink: 0; background: #f5f5f5; border-radius: 3px; padding: 2px 7px; }
+.a4-footer-pagenum.hemat { background: #eee; color: #aaa; }
+
+/* STICKY BOTTOM BAR — mobile only */
+.mobile-sticky-bar { display: none; }
+
+@media (max-width: 700px) {
+  #btn-row-desktop { display: none; }
+  .mobile-sticky-bar {
+    display: flex; gap: 8px;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    box-shadow: 0 -2px 12px rgba(0,0,0,.08);
+  }
+  .mobile-sticky-btn { flex: 1; padding: 13px 8px; font-size: 13px; border-radius: 10px; }
+  .sidebar { padding-bottom: 80px; width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid var(--border); padding: 14px 12px 80px; gap: 12px; }
+  .main { flex-direction: column; }
+  .content { padding: 14px 10px 80px; overflow-x: hidden; overflow-y: auto; align-items: flex-start; }
+  /* Di mobile, shadow-wrap lebarnya diset JS, jangan override */
+  .a4-shadow-wrap { width: auto !important; box-shadow: 0 2px 16px rgba(0,0,0,.13); }
+  .app-header { padding: 11px 14px; gap: 10px; }
+  .app-title { font-size: 13px; }
+  .app-sub { font-size: 9px; }
+  .app-version { font-size: 9px; }
+  .field input, .field select { font-size: 16px !important; padding: 10px 11px; }
+  .field label { font-size: 12px; }
+  .date-toggle-btn { font-size: 11px; padding: 7px 4px; }
+  .thumb-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .btn { padding: 12px 10px; font-size: 14px; border-radius: 10px; }
+  .preview-label { font-size: 11px; }
+  .a4-shadow-wrap { width: 100%; overflow: hidden; border-radius: 4px; }
+  .a4-scale-container { width: 100%; overflow: hidden; position: relative; }
+  #a4-pages-wrap { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+  /* A4 page di mobile: scale dari kiri atas, margin-bottom dikompensasi via JS */
+  .a4-page { width: 794px; transform-origin: top left; }
+  /* Wrapper per halaman: tinggi = 1122 * scale (diset JS) */
+  .a4-mobile-wrap { overflow: hidden; position: relative; border-radius: 4px; }
+  .page-sep { max-width: 100%; }
+  .empty-preview { padding: 36px 16px; max-width: 100%; }
+  .section-label { font-size: 9.5px; }
+}
+@media (max-width: 380px) {
+  .app-title { font-size: 12px; }
+  .btn { font-size: 13px; }
+  .thumb-grid { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS OVERLAY -->
+<div class="progress-overlay" id="progress-overlay">
+  <div class="progress-spinner"></div>
+  <div class="progress-text" id="progress-text">Membangun preview...</div>
+</div>
+
+<div class="app-header">
+  <div class="app-icon">📋</div>
+  <div>
+    <div class="app-title">Foto Lampiran A4</div>
+    <div class="app-sub">Generator Dokumentasi — by Rajib</div>
+  </div>
+  <div class="app-version">v4.1</div>
+</div>
+
+<div class="main">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div>
+      <div class="section-label">📄 Info Dokumen</div>
+      <div class="field">
+        <label>Judul Kegiatan</label>
+        <input type="text" id="judul" value="Dokumentasi Kegiatan" placeholder="Judul kegiatan..."/>
+      </div>
+      <div class="field">
+        <label>Nama Sekolah / Instansi</label>
+        <input type="text" id="sekolah" value="SDN MEGAMENDUNG 02" placeholder="Nama sekolah..."/>
+      </div>
+      <div class="field">
+        <label>📍 Alamat / Lokasi</label>
+        <input type="text" id="lokasi" value="" placeholder="Jl. Raya No. 1, Kota..."/>
+      </div>
+      <div class="field">
+        <label>Ikon / Emoji</label>
+        <input type="text" id="emoji" value="🏫" maxlength="4"/>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">📅 Tanggal Footer</div>
+      <div class="date-toggle">
+        <button class="date-toggle-btn active" id="btn-date-auto" onclick="setDateMode('auto')">🗓 Otomatis</button>
+        <button class="date-toggle-btn" id="btn-date-custom" onclick="setDateMode('custom')">✏️ Custom</button>
+        <button class="date-toggle-btn" id="btn-date-none" onclick="setDateMode('none')">🚫 Tanpa</button>
+      </div>
+      <div id="date-custom-wrap" style="display:none;">
+        <div class="field" style="margin-bottom:0;">
+          <label>Pilih Tanggal</label>
+          <input type="date" id="tanggal-custom"/>
+        </div>
+      </div>
+      <div class="tinta-info" id="date-preview-text" style="margin-top:5px;"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">🖨 Mode Cetak</div>
+      <div class="field">
+        <label>Pilih Mode</label>
+        <select id="mode-cetak" onchange="updateTintaMeter()">
+          <option value="hemat" selected>Hemat Tinta (putih bersih) — irit printer</option>
+          <option value="modern">Modern (gelap + biru) — bagus di layar</option>
+        </select>
+      </div>
+      <div class="tinta-panel">
+        <div class="tinta-row">
+          <span class="tinta-label">💧 Perkiraan pemakaian tinta</span>
+          <span class="tinta-val" id="tinta-pct">15%</span>
+        </div>
+        <div class="tinta-bar-bg">
+          <div class="tinta-bar" id="tinta-bar" style="width:15%;background:#16a34a;"></div>
+        </div>
+        <div class="tinta-info" id="tinta-info">Mode hemat: background putih, border tipis. Sangat irit tinta! ✅</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">🌫 Pengaturan Blur</div>
+      <div class="field">
+        <label>Mode Blur Foto</label>
+        <select id="blur-mode">
+          <option value="smart" selected>Smart — blur hanya sisi kosong</option>
+          <option value="off">Mati — foto di-crop (cover)</option>
+          <option value="always">Selalu — blur semua foto</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">🖼 Upload Foto</div>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-in').click()">
+        <div style="font-size:24px;margin-bottom:5px;">📂</div>
+        <p><strong>Klik pilih foto</strong><br/>atau seret & lepas di sini<br/>JPG/PNG · Maks 20 foto</p>
+      </div>
+      <input type="file" id="file-in" accept="image/*" multiple style="display:none"/>
+      <div class="thumb-grid" id="thumb-grid"></div>
+      <div class="photo-count" id="photo-count"></div>
+      <div style="margin-top:6px;" class="tag-info">💡 Drag untuk ubah urutan. Badge L=Landscape, P=Portrait.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">⚙️ Layout Grid</div>
+      <div class="field">
+        <label>Susunan Foto per Halaman</label>
+        <select id="layout">
+          <option value="auto">Otomatis (sesuai jumlah foto)</option>
+          <option value="1x1">1 Foto — penuh</option>
+          <option value="2x1">2 Foto — 2 kolom</option>
+          <option value="1x2">2 Foto — 2 baris</option>
+          <option value="2x2">4 Foto — 2×2</option>
+          <option value="3x2">6 Foto — 3×2</option>
+          <option value="4x2">8 Foto — 4×2</option>
+          <option value="5x2">10 Foto — 5×2</option>
+          <option value="3x3">9 Foto — 3×3</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Foto per Halaman (Multi-page)</label>
+        <select id="photos-per-page">
+          <option value="auto">Otomatis (ikut layout)</option>
+          <option value="2">2 foto/halaman</option>
+          <option value="4">4 foto/halaman</option>
+          <option value="6">6 foto/halaman</option>
+          <option value="8">8 foto/halaman</option>
+          <option value="10">10 foto/halaman</option>
+        </select>
+      </div>
+      <div class="tag-info" style="margin-top:4px;">📄 Lebih dari 1 halaman akan otomatis dibuat jika foto melebihi kapasitas.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SIMPAN / EXPORT -->
+    <div>
+      <div class="section-label">💾 Simpan File</div>
+      <div class="tag-info" style="font-size:10px;">
+        🖨 Klik tombol <strong>Cetak / Simpan PDF</strong> di bawah.<br/>
+        Di dialog cetak pilih <strong>"Simpan sebagai PDF"</strong> untuk menyimpan ke HP atau Laptop.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="fix-list">
+      <div style="color:#15803d;font-weight:700;font-size:10px;margin-bottom:4px;">✅ v4.1 — by Rajib</div>
+      <div>📄 Multi-halaman otomatis: ✅</div>
+      <div>🔧 Footer tidak terpotong: ✅</div>
+      <div>📱 Preview HP tidak terpotong: ✅</div>
+      <div>🎨 Tampilan terang (light): ✅</div>
+      <div>🖨 Simpan via Cetak PDF: ✅</div>
+    </div>
+
+    <div class="btn-row" id="btn-row-desktop">
+      <button class="btn btn-blue" onclick="buildPreviewDeferred()">👁 Preview A4</button>
+      <button class="btn btn-outline" onclick="cetakPDF()">🖨 Cetak / Simpan PDF</button>
+      <button class="btn btn-danger" onclick="clearAllPhotos()">🗑 Hapus Semua Foto</button>
+    </div>
+
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div class="content" id="content-area">
+    <div class="empty-preview">
+      <div class="icon">📋</div>
+      <p>Upload foto lalu klik<br/><strong>Preview A4</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- STICKY MOBILE BAR -->
+<div class="mobile-sticky-bar" id="mobile-sticky-bar">
+  <button class="btn btn-blue mobile-sticky-btn" onclick="buildPreviewDeferred()">👁 Preview</button>
+  <button class="btn btn-outline mobile-sticky-btn" onclick="cetakPDF()">🖨 Cetak PDF</button>
+</div>
+
+<script>
+// ======= STATE =======
+let photos = [];
+let dragSrc = null;
+let dateMode = 'auto';
+
+// ======= DATE HELPERS =======
+function getFormattedDate() {
+  if (dateMode === 'none') return '';
+  if (dateMode === 'custom') {
+    const v = document.getElementById('tanggal-custom').value;
+    if (v) {
+      const d = new Date(v + 'T12:00:00');
+      return d.toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
+    }
+  }
+  return new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
+}
+
+function setDateMode(mode) {
+  dateMode = mode;
+  ['auto','custom','none'].forEach(m => document.getElementById('btn-date-'+m).classList.toggle('active', mode===m));
+  document.getElementById('date-custom-wrap').style.display = mode==='custom' ? 'block' : 'none';
+  updateDatePreview();
+}
+
+function updateDatePreview() {
+  const el = document.getElementById('date-preview-text');
+  if (dateMode==='none') el.textContent = 'Tanggal tidak ditampilkan ✅';
+  else if (dateMode==='auto') el.textContent = 'Tampil otomatis: ' + getFormattedDate();
+  else {
+    const v = document.getElementById('tanggal-custom').value;
+    el.textContent = v ? 'Tanggal dipilih: ' + getFormattedDate() : 'Pilih tanggal dulu 👆';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date();
+  const y = today.getFullYear(), mo = String(today.getMonth()+1).padStart(2,'0'), d = String(today.getDate()).padStart(2,'0');
+  document.getElementById('tanggal-custom').value = `${y}-${mo}-${d}`;
+  updateDatePreview();
+  document.getElementById('tanggal-custom').addEventListener('change', updateDatePreview);
+});
+
+// ======= TINTA METER =======
+function updateTintaMeter() {
+  const mode = document.getElementById('mode-cetak').value;
+  const bar = document.getElementById('tinta-bar');
+  const pct = document.getElementById('tinta-pct');
+  const info = document.getElementById('tinta-info');
+  if (mode === 'hemat') {
+    bar.style.width='15%'; bar.style.background='#16a34a';
+    pct.textContent='~15%'; pct.style.color='#16a34a';
+    info.textContent='Mode hemat: background putih, border tipis. Sangat irit tinta! ✅';
+  } else {
+    bar.style.width='70%'; bar.style.background='#ea580c';
+    pct.textContent='~70%'; pct.style.color='#ea580c';
+    info.textContent='Mode modern: area gelap & biru. Lebih boros tinta, cocok untuk PDF digital. ⚠️';
+  }
+}
+updateTintaMeter();
+
+// ======= FILE INPUT =======
+document.getElementById('file-in').addEventListener('change', function(e) {
+  addFiles(Array.from(e.target.files)); this.value='';
+});
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));
+});
+
+function addFiles(files) {
+  const space = 20 - photos.length;
+  let pending = Math.min(files.length, space);
+  if (!pending) { alert('Maksimal 20 foto!'); return; }
+  files.slice(0, pending).forEach(f => {
+    // Batasi ukuran file: skip jika >8MB
+    if (f.size > 8 * 1024 * 1024) {
+      alert(`File "${f.name}" terlalu besar (maks 8MB). Dilewati.`);
+      return;
+    }
+    const r = new FileReader();
+    r.onload = ev => {
+      const src = ev.target.result;
+      const img = new Image();
+      img.onload = () => {
+        // Resize besar di canvas agar lebih ringan di HP
+        const maxDim = 1200;
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxDim || h > maxDim) {
+          const ratio = Math.min(maxDim/w, maxDim/h);
+          w = Math.round(w*ratio); h = Math.round(h*ratio);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const resized = canvas.toDataURL('image/jpeg', 0.82);
+          photos.push({ src: resized, w, h, isLandscape: w >= h });
+        } else {
+          photos.push({ src, w: img.naturalWidth, h: img.naturalHeight, isLandscape: img.naturalWidth >= img.naturalHeight });
+        }
+        renderThumbs();
+      };
+      img.src = src;
+    };
+    r.readAsDataURL(f);
+  });
+}
+
+// ======= THUMBS =======
+function renderThumbs() {
+  const grid = document.getElementById('thumb-grid');
+  grid.innerHTML = '';
+  photos.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'thumb'; div.draggable = true;
+    div.innerHTML = `<img src="${p.src}" loading="lazy"/>
+      <span class="thumb-orient">${p.isLandscape?'L':'P'}</span>
+      <span class="thumb-num">${i+1}</span>
+      <button class="thumb-del" onclick="event.stopPropagation();delPhoto(${i})">✕</button>`;
+    div.addEventListener('dragstart', () => { dragSrc = i; div.classList.add('dragging'); });
+    div.addEventListener('dragend', () => { div.classList.remove('dragging'); document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('drag-target')); });
+    div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-target'); });
+    div.addEventListener('dragleave', () => div.classList.remove('drag-target'));
+    div.addEventListener('drop', e => {
+      e.preventDefault(); div.classList.remove('drag-target');
+      if (dragSrc !== null && dragSrc !== i) { const m = photos.splice(dragSrc,1)[0]; photos.splice(i,0,m); dragSrc = i; renderThumbs(); }
+    });
+    grid.appendChild(div);
+  });
+  const cEl = document.getElementById('photo-count');
+  cEl.textContent = photos.length ? `${photos.length} foto (${photos.filter(p=>p.isLandscape).length} landscape, ${photos.filter(p=>!p.isLandscape).length} portrait)` : '';
+}
+function delPhoto(i) { photos.splice(i,1); renderThumbs(); }
+function clearAllPhotos() {
+  if (!photos.length) return;
+  if (confirm('Hapus semua foto?')) { photos=[]; renderThumbs(); document.getElementById('content-area').innerHTML = '<div class="empty-preview"><div class="icon">📋</div><p>Upload foto lalu klik<br/><strong>Preview A4</strong></p></div>'; }
+}
+
+// ======= GRID CONFIG =======
+function gridConfig(n, mode) {
+  if (mode !== 'auto') {
+    const map = {'1x1':[1,1],'2x1':[2,1],'1x2':[1,2],'2x2':[2,2],'3x2':[3,2],'4x2':[4,2],'5x2':[5,2],'3x3':[3,3]};
+    const [c,r] = map[mode]||[2,Math.ceil(n/2)]; return {cols:c,rows:r};
+  }
+  if (n===1) return {cols:1,rows:1};
+  if (n<=2)  return {cols:2,rows:1};
+  if (n<=4)  return {cols:2,rows:2};
+  if (n<=6)  return {cols:3,rows:2};
+  if (n<=8)  return {cols:4,rows:2};
+  if (n<=9)  return {cols:3,rows:3};
+  return {cols:5,rows:2};
+}
+
+// Jumlah foto per halaman
+function getPhotosPerPage(layout) {
+  const ppp = document.getElementById('photos-per-page').value;
+  if (ppp !== 'auto') return parseInt(ppp);
+  const {cols, rows} = gridConfig(photos.length, layout);
+  return cols * rows;
+}
+
+// ======= MAKE CELL =======
+function makeCell(photo, idx, cellH, cellW, hemat, forPrint, blurMode) {
+  const photoAspect = photo.w / photo.h;
+  const cellAspect  = cellW / cellH;
+  const hasEmptySides = blurMode==='always' ? true : blurMode==='off' ? false : Math.abs(photoAspect - cellAspect) > 0.25;
+  const coverMode = blurMode === 'off';
+  const blurFilter = hemat ? 'blur(14px) brightness(.85) saturate(.5) grayscale(.4)' : 'blur(16px) brightness(.45) saturate(1.3)';
+  const cellBorder = hemat ? '1.5px solid #ccc' : '2px solid #1a1a1a';
+  const cellShadow = hemat ? 'none' : '2px 2px 0 #1a1a1a';
+  const cellBg     = hemat ? '#f5f5f5' : '#111';
+  const numColor   = hemat ? '#555' : 'rgba(255,255,255,.95)';
+  const numBg      = hemat ? 'rgba(255,255,255,.82)' : 'rgba(0,0,0,.6)';
+  const numStr     = String(idx+1).padStart(2,'0');
+
+  if (forPrint) {
+    const blurDiv = hasEmptySides ? `<div style="position:absolute;inset:-8%;width:116%;height:116%;background-image:url('${photo.src}');background-size:cover;background-position:center;filter:${blurFilter};z-index:0;"></div>` : '';
+    const imgStyle = coverMode ? `position:relative;z-index:1;width:100%;height:100%;object-fit:cover;display:block;` : `position:relative;z-index:1;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;`;
+    return `<div style="height:${cellH}px;position:relative;overflow:hidden;border-radius:4px;border:${cellBorder};box-shadow:${cellShadow};background:${cellBg};display:flex;align-items:center;justify-content:center;">${blurDiv}<img src="${photo.src}" style="${imgStyle}"/><span style="position:absolute;bottom:4px;right:5px;z-index:2;font-size:8.5px;font-weight:800;color:${numColor};background:${numBg};padding:2px 5px;border-radius:3px;letter-spacing:.05em;">${numStr}</span></div>`;
+  }
+
+  const hc = hemat ? ' hemat' : '';
+  const blurClass = hasEmptySides ? ' needs-blur' : '';
+  const coverClass = coverMode ? ' cover-mode' : '';
+  return `<div class="foto-cell${hc}${blurClass}${coverClass}" style="height:${cellH}px;"><div class="blur-bg" style="background-image:url('${photo.src}');${hasEmptySides?'':'display:none;'}"></div><img src="${photo.src}" loading="lazy"/><span class="foto-num${hc}">${numStr}</span></div>`;
+}
+
+// ======= MOBILE SCALE =======
+function applyMobileScale() {
+  if (window.innerWidth > 700) return;
+  const contentEl = document.querySelector('.content');
+  const containerW = (contentEl ? contentEl.clientWidth : window.innerWidth) - 20;
+  const scale = Math.max(0.28, Math.min(1, containerW / 794));
+  const scaledH = Math.round(1122 * scale);
+
+  document.querySelectorAll('.a4-page').forEach(a4 => {
+    a4.style.transform = `scale(${scale})`;
+    a4.style.transformOrigin = 'top left';
+    a4.style.marginBottom = '0';
+    // Set wrapper tinggi = hasil scale
+    const wrap = a4.closest('.a4-mobile-wrap');
+    if (wrap) {
+      wrap.style.height = scaledH + 'px';
+      wrap.style.width = Math.round(794 * scale) + 'px';
+    }
+  });
+}
+window.addEventListener('resize', applyMobileScale);
+
+// ======= DEFERRED PREVIEW (avoid blocking mobile) =======
+function buildPreviewDeferred() {
+  if (!photos.length) { alert('Upload minimal 1 foto dulu!'); return; }
+  showProgress('Membangun preview...');
+  setTimeout(() => {
+    try { buildPreview(); } catch(e) { console.error(e); }
+    hideProgress();
+    setTimeout(applyMobileScale, 80);
+  }, 50);
+}
+
+function showProgress(msg) {
+  document.getElementById('progress-text').textContent = msg || 'Memproses...';
+  document.getElementById('progress-overlay').classList.add('show');
+}
+function hideProgress() {
+  document.getElementById('progress-overlay').classList.remove('show');
+}
+
+// ======= BUILD PREVIEW =======
+function buildPreview() {
+  const judul   = document.getElementById('judul').value || 'Dokumentasi Kegiatan';
+  const sekolah = document.getElementById('sekolah').value || '';
+  const lokasi  = document.getElementById('lokasi').value || '';
+  const emoji   = document.getElementById('emoji').value || '🏫';
+  const layout  = document.getElementById('layout').value;
+  const hemat   = document.getElementById('mode-cetak').value === 'hemat';
+  const blurMode= document.getElementById('blur-mode').value;
+  const hc      = hemat ? ' hemat' : '';
+
+  const PAGE_W    = 794;
+  const bodyPadH  = 10 + 6;
+  const bodyPadW  = 18 * 2;
+  const headerH   = 5 + 67; // topbar + header
+  const footerH   = 34;
+  const bodyH     = 1122 - headerH - footerH - bodyPadH;
+  const bodyW     = PAGE_W - bodyPadW;
+  const gapH = 7, gapW = 7;
+
+  const ppp = getPhotosPerPage(layout);
+  const totalPages = Math.ceil(photos.length / ppp);
+  const tanggal = getFormattedDate();
+
+  let pagesHTML = '';
+
+  for (let pg = 0; pg < totalPages; pg++) {
+    const slice = photos.slice(pg * ppp, (pg+1) * ppp);
+    const {cols, rows} = gridConfig(slice.length, layout);
+    const cellH = Math.floor((bodyH - (rows-1)*gapH) / rows);
+    const cellW = Math.floor((bodyW - (cols-1)*gapW) / cols);
+
+    let cells = '';
+    slice.forEach((p,i) => { cells += makeCell(p, pg*ppp+i, cellH, cellW, hemat, false, blurMode); });
+
+    const pageNumStr = totalPages > 1 ? `Hal ${pg+1} / ${totalPages}` : '';
+
+    pagesHTML += `
+      ${pg > 0 ? `<div class="page-sep"><div class="page-sep-line"></div><div class="page-sep-label">HALAMAN ${pg+1}</div><div class="page-sep-line"></div></div>` : ''}
+      <div class="a4-mobile-wrap a4-shadow-wrap">
+        <div class="a4-page">
+          <div class="a4-top-bar${hc}"></div>
+          <div class="a4-header${hc}">
+            <div class="a4-logo-box${hc}">${emoji}</div>
+            <div style="flex:1;">
+              <div class="a4-judul">${judul}</div>
+              <div class="a4-sekolah">${sekolah}</div>
+            </div>
+            <div class="a4-badge${hc}">DOKUMENTASI</div>
+          </div>
+          <div class="a4-body${hc}">
+            <div class="a4-grid" style="grid-template-columns:repeat(${cols},1fr);gap:${gapH}px;">${cells}</div>
+          </div>
+          <div class="a4-footer${hc}">
+            <div class="a4-footer-text">${sekolah.toUpperCase()}</div>
+            ${lokasi ? `<div class="a4-footer-lokasi">📍 ${lokasi}</div>` : '<div class="a4-footer-center"></div>'}
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+              ${tanggal ? `<div class="a4-footer-text">${tanggal}</div>` : ''}
+              ${pageNumStr ? `<div class="a4-footer-pagenum${hc}">${pageNumStr}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const infoLabel = totalPages > 1
+    ? `📄 Preview A4 — ${totalPages} Halaman · ${photos.length} Foto · ${hemat?'Mode Hemat Tinta 🟢':'Mode Modern 🔵'}`
+    : `📄 Preview A4 — ${hemat?'Mode Hemat Tinta 🟢':'Mode Modern 🔵'}`;
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="preview-label">${infoLabel}</div>
+    <div id="a4-pages-wrap" style="display:flex;flex-direction:column;gap:18px;align-items:center;width:100%;">
+      ${pagesHTML}
+    </div>`;
+}
+
+// ======= CETAK PDF =======
+function cetakPDF() {
+  if (!photos.length) { alert('Upload foto dulu!'); return; }
+  showProgress('Menyiapkan dokumen cetak...');
+
+  setTimeout(() => {
+    const judul   = document.getElementById('judul').value || 'Dokumentasi Kegiatan';
+    const sekolah = document.getElementById('sekolah').value || '';
+    const lokasi  = document.getElementById('lokasi').value || '';
+    const emoji   = document.getElementById('emoji').value || '🏫';
+    const layout  = document.getElementById('layout').value;
+    const hemat   = document.getElementById('mode-cetak').value === 'hemat';
+    const blurMode= document.getElementById('blur-mode').value;
+
+    const PAGE_W   = 794;
+    const bodyPadH = 10 + 6;
+    const bodyPadW = 18 * 2;
+    const headerH  = 5 + 67;
+    const footerH  = 34;
+    const bodyH    = 1122 - headerH - footerH - bodyPadH;
+    const bodyW    = PAGE_W - bodyPadW;
+    const gapH = 7, gapW = 7;
+
+    const ppp = getPhotosPerPage(layout);
+    const totalPages = Math.ceil(photos.length / ppp);
+    const tanggal = getFormattedDate();
+
+    const topBarCSS = hemat ? 'height:5px;background:#e5e7eb;flex-shrink:0;' : 'height:5px;background:linear-gradient(90deg,#1d4ed8,#2563eb,#3b82f6,#1d4ed8);flex-shrink:0;';
+    const hdrBorder = hemat ? '#bbb' : '#1a1a1a';
+    const logoBg    = hemat ? '#666' : '#1a1a1a';
+    const bodyBg    = hemat ? '#fff' : '#fafaf8';
+    const footerBdr = hemat ? '#ddd' : '#d4cfc7';
+
+    let bodyContent = '';
+    for (let pg = 0; pg < totalPages; pg++) {
+      const slice = photos.slice(pg * ppp, (pg+1) * ppp);
+      const {cols, rows} = gridConfig(slice.length, layout);
+      const cellH = Math.floor((bodyH - (rows-1)*gapH) / rows);
+      const cellW = Math.floor((bodyW - (cols-1)*gapW) / cols);
+      let cells = '';
+      slice.forEach((p,i) => { cells += makeCell(p, pg*ppp+i, cellH, cellW, hemat, true, blurMode); });
+      const pageNumStr = totalPages > 1 ? `Hal ${pg+1} / ${totalPages}` : '';
+      const pageBreak = pg < totalPages-1 ? 'page-break-after:always;' : '';
+
+      bodyContent += `<div style="width:210mm;min-height:297mm;background:#fff;display:flex;flex-direction:column;${pageBreak}">
+        <div style="${topBarCSS}"></div>
+        <div style="padding:14px 24px 11px;border-bottom:2px solid ${hdrBorder};display:flex;align-items:center;gap:14px;background:#fff;flex-shrink:0;">
+          <div style="width:38px;height:38px;background:${logoBg};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${emoji}</div>
+          <div style="flex:1;">
+            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#1a1a1a;text-transform:uppercase;letter-spacing:.04em;line-height:1.2;">${judul}</div>
+            <div style="font-size:9.5px;font-weight:700;color:#6b6455;margin-top:2px;letter-spacing:.1em;text-transform:uppercase;">${sekolah}</div>
+          </div>
+          <div style="background:${logoBg};color:#fff;font-size:7.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:4px;flex-shrink:0;">DOKUMENTASI</div>
+        </div>
+        <div style="flex:1;padding:10px 18px 6px;background:${bodyBg};">
+          <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:${gapH}px;">${cells}</div>
+        </div>
+        <div style="padding:7px 24px;border-top:1px solid ${footerBdr};display:flex;align-items:center;justify-content:space-between;background:#fff;flex-shrink:0;gap:8px;min-height:34px;">
+          <div style="font-size:10px;color:#999;font-weight:600;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;">${sekolah.toUpperCase()}</div>
+          ${lokasi ? `<div style="font-size:9.5px;color:#aaa;font-weight:500;text-align:center;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📍 ${lokasi}</div>` : '<div style="flex:1;"></div>'}
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            ${tanggal ? `<div style="font-size:10px;color:#999;font-weight:600;white-space:nowrap;">${tanggal}</div>` : ''}
+            ${pageNumStr ? `<div style="font-size:10px;color:#bbb;font-weight:600;white-space:nowrap;background:#f5f5f5;border-radius:3px;padding:2px 7px;">${pageNumStr}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${judul}</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+  @page{size:A4;margin:0;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#fff;font-family:'Plus Jakarta Sans',Arial,sans-serif;}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+</style></head><body>${bodyContent}
+<script>
+  document.fonts.ready.then(()=>{setTimeout(()=>window.print(),600);});
+<\/script></body></html>`;
+
+    hideProgress();
+    const w = window.open('','_blank');
+    if (!w) { alert('Popup diblokir browser. Izinkan popup untuk situs ini.'); return; }
+    w.document.write(html);
+    w.document.close();
+  }, 60);
+}
+
+</script>
+</body>
+</html>
